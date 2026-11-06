@@ -1,0 +1,62 @@
+{"text": "need a logo, 4k max, ready by next week, cheaper the better", "ask_price": 5000, "expect": {"budget": 4000, "priority": "price"}}
+{"text": "I can spend 3500 rupees and need it in 5 days", "ask_price": 4000, "expect": {"budget": 3500, "latest_days": 5}}
+{"text": "budget 2k, 3 days, speed is everything", "ask_price": 2500, "expect": {"budget": 2000, "latest_days": 3, "priority": "speed"}}
+{"text": "Rs 6,000 is my limit. delivery within 10 days.", "ask_price": 7000, "expect": {"budget": 6000, "latest_days": 10}}
+{"text": "Not paying more than the asking price. Two weeks is fine.", "ask_price": 4500, "expect": {"budget": 4500, "latest_days": 14}}
+{"text": "cheap please, max 1500, whenever", "ask_price": 2000, "expect": {"budget": 1500, "priority": "price", "latest_days": null}}
+{"text": "urgent!! need it tomorrow, will pay up to 9000", "ask_price": 8000, "expect": {"budget": 9000, "latest_days": 1, "priority": "speed"}}
+{"text": "my max is ₹12,000 and I need it within a month", "ask_price": 15000, "expect": {"budget": 12000, "latest_days": 30}}
+{"text": "anything under 800 rupees works, 4 days at the latest", "ask_price": 1000, "expect": {"budget": 800, "latest_days": 4}}
+{"text": "i want to pay around 3000 but could go up to 3600, delivery by 7 days", "ask_price": 4000, "expect": {"budget": 3600, "ideal_price": 3000, "latest_days": 7}}
+{"text": "hoping for 2500, absolutely no more than 3000. a week at most.", "ask_price": 3500, "expect": {"budget": 3000, "ideal_price": 2500, "latest_days": 7}}
+{"text": "within 6 days please, budget is 4.5k", "ask_price": 5000, "expect": {"budget": 4500, "latest_days": 6}}
+{"text": "Price is more important to me than time. Up to 5000, 20 days is OK.", "ask_price": 6000, "expect": {"budget": 5000, "latest_days": 20, "priority": "price"}}
+{"text": "need this fast, even if it costs more. 7500 max, 2 days.", "ask_price": 7000, "expect": {"budget": 7500, "latest_days": 2, "priority": "speed"}}
+{"text": "budget 3k deadline 8 days use 10 rounds", "ask_price": 3500, "expect": {"budget": 3000, "latest_days": 8, "max_rounds": 10}}
+{"text": "negotiate hard, 6 rounds, I won't go above 2200, need it by 5 days", "ask_price": 2800, "expect": {"budget": 2200, "latest_days": 5, "max_rounds": 6}}
+{"text": "can you get it for under 10k? I'm flexible on time, 30 days", "ask_price": 12000, "expect": {"budget": 10000, "latest_days": 30}}
+{"text": "INR 5500 max. delivered in 9 days. thanks!", "ask_price": 6000, "expect": {"budget": 5500, "latest_days": 9}}
+{"text": "I only have 1200 rs, and I need it in 3 days", "ask_price": 1500, "expect": {"budget": 1200, "latest_days": 3}}
+{"text": "looking to spend 7k tops. one week.", "ask_price": 8000, "expect": {"budget": 7000, "latest_days": 7}}
+{"text": "budget: 4000. timeline: 12 days. priority: cost", "ask_price": 4800, "expect": {"budget": 4000, "latest_days": 12, "priority": "price"}}
+{"text": "4000 max", "ask_price": 5000, "expect": {"budget": 4000, "latest_days": null}}
+{"text": "in 5 days", "ask_price": 5000, "expect": {"budget": null, "latest_days": 5}}
+{"text": "I want it as cheap as possible, I can wait up to three weeks, 2000 rupees is my ceiling", "ask_price": 3000, "expect": {"budget": 2000, "latest_days": 21, "priority": "price"}}
+{"text": "hey so i can do like 6500 at most and it would be great if it came in 4 days but 10 is the absolute latest", "ask_price": 7000, "expect": {"budget": 6500, "latest_days": 10, "ideal_days": 4}}
+{"text": "Please keep it under ₹9,500 and deliver within 15 days. Time is not a problem, save me money.", "ask_price": 10000, "expect": {"budget": 9500, "latest_days": 15, "priority": "price"}}
+{"text": "speed over price. 3 days max. i'll go up to 8k", "ask_price": 7500, "expect": {"budget": 8000, "latest_days": 3, "priority": "speed"}}
+{"text": "max 2500, 14 days", "ask_price": 3000, "expect": {"budget": 2500, "latest_days": 14}}
+{"text": "I'd pay up to 4200 rs if you can get it to me in under 6 days", "ask_price": 4500, "expect": {"budget": 4200, "latest_days": 6}}
+{"text": "no rush at all, a month is fine, budget 3300", "ask_price": 3800, "expect": {"budget": 3300, "latest_days": 30}}
+{"text": "budget of five thousand rupees, delivery in ten days", "ask_price": 6000, "expect": {"budget": 5000, "latest_days": 10}}
+{"text": "I can go up to 2.5k and need it within 2 weeks", "ask_price": 3000, "expect": {"budget": 2500, "latest_days": 14}}
+{"text": "Rs.15000 maximum, within 20 days, fast delivery matters more", "ask_price": 16000, "expect": {"budget": 15000, "latest_days": 20, "priority": "speed"}}
+{"text": "dont want to pay more than 900. 2 days.", "ask_price": 1100, "expect": {"budget": 900, "latest_days": 2}}
+{"text": "my budget is 3,800 and the deadline is 6 days, would love to save money", "ask_price": 4000, "expect": {"budget": 3800, "latest_days": 6, "priority": "price"}}
+{"text": "Just get me the best price. Limit 5k, 9 days.", "ask_price": 5500, "expect": {"budget": 5000, "latest_days": 9, "priority": "price"}}
+{"text": "up to 6000 rupees, a fortnight, use 8 rounds", "ask_price": 7000, "expect": {"budget": 6000, "latest_days": 14, "max_rounds": 8}}
+{"text": "Within 4 days, costs be damned, 11000 is the cap", "ask_price": 10000, "expect": {"budget": 11000, "latest_days": 4, "priority": "speed"}}
+{"text": "need the thing by 12 days. i can pay 2800 max. ideally 2200", "ask_price": 3200, "expect": {"budget": 2800, "latest_days": 12, "ideal_price": 2200}}
+{"text": "pls negotiate. 4.2k limit. 1 week.", "ask_price": 4800, "expect": {"budget": 4200, "latest_days": 7}}
+{"text": "I'm okay with up to 7000. Delivery isn't urgent, 25 days.", "ask_price": 8000, "expect": {"budget": 7000, "latest_days": 25}}
+{"text": "ceiling 1800 rupees; deadline 3 days; urgent", "ask_price": 2000, "expect": {"budget": 1800, "latest_days": 3, "priority": "speed"}}
+{"text": "can't exceed 3,000. want it within 10 days, prefer 5", "ask_price": 3500, "expect": {"budget": 3000, "latest_days": 10, "ideal_days": 5}}
+{"text": "Hello, I would like to buy this for at most 8,200 rupees and receive it in 11 days. Cost matters more to me.", "ask_price": 9000, "expect": {"budget": 8200, "latest_days": 11, "priority": "price"}}
+{"text": "6k budget 5 days no more rounds than 6", "ask_price": 6500, "expect": {"budget": 6000, "latest_days": 5, "max_rounds": 6}}
+{"text": "whatever the asking price is, that's my max. 8 days.", "ask_price": 3700, "expect": {"budget": 3700, "latest_days": 8}}
+{"text": "I need to keep it below 2000 and get it within 3 weeks", "ask_price": 2600, "expect": {"budget": 2000, "latest_days": 21}}
+{"text": "pay up to 9k, i want it in a week, no preference between price and speed", "ask_price": 9500, "expect": {"budget": 9000, "latest_days": 7, "priority": null}}
+{"text": "my wallet says 1000 and my patience says 2 days", "ask_price": 1400, "expect": {"budget": 1000, "latest_days": 2}}
+{"text": "budget 5k. a couple of weeks is fine. don't care about speed, just cheap.", "ask_price": 6000, "expect": {"budget": 5000, "latest_days": 14, "priority": "price"}}
+{"text": "Max spend 3200. Needs to arrive in 4 days, no later.", "ask_price": 3600, "expect": {"budget": 3200, "latest_days": 4}}
+{"text": "Need a website banner, max budget 4.8k, deliver in 6 days, cheapest option please", "ask_price": 5500, "expect": {"budget": 4800, "latest_days": 6, "priority": "price"}}
+{"text": "I can spend at most 7500 rupees. Need delivery within 3 days, it's urgent", "ask_price": 8000, "expect": {"budget": 7500, "latest_days": 3, "priority": "speed"}}
+{"text": "Ideally 1800, but I can stretch to 2300. Please finish within 9 days", "ask_price": 2800, "expect": {"budget": 2300, "ideal_price": 1800, "latest_days": 9}}
+{"text": "Budget is 5.5k and two weeks is my deadline. Use 12 negotiation rounds", "ask_price": 6000, "expect": {"budget": 5500, "latest_days": 14, "max_rounds": 12}}
+{"text": "I need this ASAP, preferably tomorrow. My maximum is Rs 6500", "ask_price": 6000, "expect": {"budget": 6500, "latest_days": 1, "priority": "speed"}}
+{"text": "Keep the cost below 3200. I can wait up to a month, saving money matters most", "ask_price": 4000, "expect": {"budget": 3200, "latest_days": 30, "priority": "price"}}
+{"text": "My limit is ₹8,400, ideally deliver in 5 days but absolutely no later than 8 days", "ask_price": 9000, "expect": {"budget": 8400, "latest_days": 8, "ideal_days": 5}}
+{"text": "Asking price is my budget, no extra spending. Need it in 4 days and allow 5 rounds", "ask_price": 2700, "expect": {"budget": 2700, "latest_days": 4, "max_rounds": 5}}
+{"text": "I have only 950 rupees to spend, but I need it within 48 hours", "ask_price": 1200, "expect": {"budget": 950, "latest_days": 2, "priority": "speed"}}
+{"text": "I can pay up to 11k, delivery in 18 days is fine, and my ideal price is 9k", "ask_price": 12000, "expect": {"budget": 11000, "ideal_price": 9000, "latest_days": 18}}
+{"text": "No rush, whenever you can finish. My budget is 2.2k and use 7 rounds", "ask_price": 3000, "expect": {"budget": 2200, "latest_days": null, "max_rounds": 7}}

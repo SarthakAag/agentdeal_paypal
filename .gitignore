@@ -1,0 +1,136 @@
+
+# ==========================================
+# Environment variables and secrets
+# ==========================================
+
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# ==========================================
+# Python
+# ==========================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Type checking and linting
+.mypy_cache/
+.pyright/
+.ruff_cache/
+
+# ==========================================
+# Node.js / React / Vite
+# ==========================================
+
+node_modules/
+frontend/node_modules/
+
+frontend/dist/
+dist/
+
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ==========================================
+# IDE and editor files
+# ==========================================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Local databases and runtime files
+# ==========================================
+
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# ==========================================
+# AI models and training artifacts
+# ==========================================
+
+# Model weights
+*.safetensors
+*.gguf
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Model checkpoints and caches
+models/checkpoint-*/
+training/checkpoint-*/
+checkpoints/
+.cache/
+huggingface_cache/
+
+# Generated training outputs
+results/
+runs/
+wandb/
+
+# ==========================================
+# Generated datasets and temporary files
+# ==========================================
+
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# ==========================================
+# Docker local overrides
+# ==========================================
+
+docker-compose.override.yml
+
+# Local databases and generated datasets
+# Ignore generated data, but keep small evaluation fixtures
+data/*
+!data/eval/
+!data/eval/*.jsonl
+
+# Trained models and tokenizer artifacts
+models/

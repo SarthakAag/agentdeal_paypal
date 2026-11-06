@@ -1,0 +1,11 @@
+{"text": "Need a website banner, max budget 4.8k, deliver in 6 days, cheapest option please", "ask_price": 5500, "expect": {"budget": 4800, "latest_days": 6, "priority": "price"}}
+{"text": "I can spend at most 7500 rupees. Need delivery within 3 days, it's urgent", "ask_price": 8000, "expect": {"budget": 7500, "latest_days": 3, "priority": "speed"}}
+{"text": "Ideally 1800, but I can stretch to 2300. Please finish within 9 days", "ask_price": 2800, "expect": {"budget": 2300, "ideal_price": 1800, "latest_days": 9}}
+{"text": "Budget is 5.5k and two weeks is my deadline. Use 12 negotiation rounds", "ask_price": 6000, "expect": {"budget": 5500, "latest_days": 14, "max_rounds": 12}}
+{"text": "I need this ASAP, preferably tomorrow. My maximum is Rs 6500", "ask_price": 6000, "expect": {"budget": 6500, "latest_days": 1, "priority": "speed"}}
+{"text": "Keep the cost below 3200. I can wait up to a month, saving money matters most", "ask_price": 4000, "expect": {"budget": 3200, "latest_days": 30, "priority": "price"}}
+{"text": "My limit is ₹8,400, ideally deliver in 5 days but absolutely no later than 8 days", "ask_price": 9000, "expect": {"budget": 8400, "latest_days": 8, "ideal_days": 5}}
+{"text": "Asking price is my budget, no extra spending. Need it in 4 days and allow 5 rounds", "ask_price": 2700, "expect": {"budget": 2700, "latest_days": 4, "max_rounds": 5}}
+{"text": "I have only 950 rupees to spend, but I need it within 48 hours", "ask_price": 1200, "expect": {"budget": 950, "latest_days": 2, "priority": "speed"}}
+{"text": "I can pay up to 11k, delivery in 18 days is fine, and my ideal price is 9k", "ask_price": 12000, "expect": {"budget": 11000, "ideal_price": 9000, "latest_days": 18}}
+{"text": "No rush, whenever you can finish. My budget is 2.2k and use 7 rounds", "ask_price": 3000, "expect": {"budget": 2200, "latest_days": null, "max_rounds": 7}}
