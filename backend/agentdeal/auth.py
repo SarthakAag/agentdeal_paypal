@@ -13,13 +13,30 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
-from . import paypal_client as pp  # noqa: F401 (loads .env)
+from . import paypal_client as pp  # noqa: F401
 from .db import conn, expire_reviews
 
 router = APIRouter(tags=["auth"])
 
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-_fails: dict = {}  # email -> (failed attempts, time of the first one)
+_fails: dict = {}
+
+DEMO_ACCOUNTS = {
+    "buyer@demo.test": {
+        "name": "AgentDeal Demo Buyer",
+        "password": "demo-pass-123",
+        "role": "buyer",
+    },
+    "seller@demo.test": {
+        "name": "AgentDeal Demo Seller",
+        "password": "demo-pass-123",
+        "role": "seller",
+    },
+}
+
+
+def is_demo_account(email: str) -> bool:
+    return email.strip().lower() in DEMO_ACCOUNTS
 
 
 def hash_password(pw: str) -> str:
@@ -84,6 +101,40 @@ def create_user(name: str, email: str, password: str, role: str) -> dict:
     }
 
 
+def ensure_demo_accounts() -> None:
+    """
+    Create shared demo accounts if they do not exist.
+    Never overwrite existing passwords or account details.
+    """
+    if os.getenv("DEMO_ACCOUNTS_ENABLED") != "1":
+        return
+
+    with conn() as c:
+        for email, details in DEMO_ACCOUNTS.items():
+            existing = c.execute(
+                "SELECT email FROM users WHERE email=?",
+                (email,),
+            ).fetchone()
+
+            if existing:
+                continue
+
+            c.execute(
+                """
+                INSERT INTO users (email, name, role, password_hash)
+                VALUES (?, ?, ?, ?)
+                """,
+                (
+                    email,
+                    details["name"],
+                    details["role"],
+                    hash_password(details["password"]),
+                ),
+            )
+
+    print("AgentDeal demo accounts initialized.")
+
+
 def current_user(request: Request):
     email = request.session.get("email")
 
@@ -133,7 +184,6 @@ def deal_side(request: Request, nid: int):
     """
     u = require_user(request)
 
-    # Process expired seller reviews before retrieving the deal.
     expire_reviews()
 
     with conn() as c:
@@ -187,6 +237,12 @@ def register(body: RegisterIn, request: Request):
             "Enter a valid email address",
         )
 
+    if is_demo_account(body.email):
+        raise HTTPException(
+            403,
+            "This email is reserved for the shared demo account.",
+        )
+
     try:
         user = create_user(
             body.name,
@@ -206,6 +262,14 @@ def register(body: RegisterIn, request: Request):
 @router.post("/auth/login")
 def login(body: LoginIn, request: Request):
     email = body.email.strip().lower()
+
+    if is_demo_account(email) and os.getenv(
+        "DEMO_ACCOUNTS_ENABLED"
+    ) != "1":
+        raise HTTPException(
+            403,
+            "Demo accounts are currently disabled.",
+        )
 
     if _locked(email):
         raise HTTPException(
@@ -262,21 +326,26 @@ def me(request: Request):
     return {"user": current_user(request)}
 
 
-# ----------------------------------------------------------------
+# --------------------------------------------------
 # Sign in with PayPal
-# ----------------------------------------------------------------
+# --------------------------------------------------
 
 def _front() -> str:
     return os.getenv(
         "FRONTEND_URL",
         "http://localhost:5173",
-    )
+    ).rstrip("/")
 
 
 def _web_base() -> str:
+    paypal_base = os.getenv(
+        "PAYPAL_BASE_URL",
+        "https://api-m.sandbox.paypal.com",
+    )
+
     return (
         "https://www.sandbox.paypal.com"
-        if "sandbox" in os.environ["PAYPAL_BASE_URL"]
+        if "sandbox" in paypal_base
         else "https://www.paypal.com"
     )
 
@@ -286,23 +355,22 @@ def paypal_login(request: Request, role: str = "buyer"):
     if role not in ("buyer", "seller"):
         role = "buyer"
 
-    state = secrets.token_urlsafe(16)
+    state = secrets.token_urlsafe(32)
 
     request.session["oauth_state"] = state
     request.session["login_role"] = role
+
+    public_base = os.getenv(
+        "PUBLIC_BASE_URL",
+        "http://localhost:8000",
+    ).rstrip("/")
 
     q = urlencode({
         "flowEntry": "static",
         "client_id": os.environ["PAYPAL_CLIENT_ID"],
         "response_type": "code",
         "scope": "openid email",
-        "redirect_uri": (
-            os.getenv(
-                "PUBLIC_BASE_URL",
-                "http://localhost:8000",
-            )
-            + "/api/auth/callback"
-        ),
+        "redirect_uri": public_base + "/api/auth/callback",
         "state": state,
     })
 
@@ -371,9 +439,9 @@ def paypal_callback(
             "",
         )
         or ""
-    ).lower()
+    ).strip().lower()
 
-    if not email:
+    if not email or not EMAIL.match(email):
         return RedirectResponse(
             f"{_front()}/login?error=noemail",
             status_code=303,
@@ -386,7 +454,6 @@ def paypal_callback(
         ).fetchone()
 
     if not r:
-        # First sign-in: create account with selected role.
         role = request.session.get("login_role", "buyer")
 
         create_user(
@@ -397,6 +464,7 @@ def paypal_callback(
         )
 
     request.session.pop("login_role", None)
+    request.session.clear()
     request.session["email"] = email
 
     return RedirectResponse(
