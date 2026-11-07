@@ -4,5 +4,4 @@ pydantic>=2
 httpx
 pytest
 python-dotenv
-python-dotenv
 itsdangerous
