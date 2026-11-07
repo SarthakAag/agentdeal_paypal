@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.middleware.sessions import SessionMiddleware
@@ -93,6 +93,33 @@ app.add_middleware(
     same_site="none" if frontend_url.startswith("https://") else "lax",
     https_only=os.getenv("HTTPS_ONLY") == "1",
 )
+
+
+# --------------------------------------------------
+# Google Search Console verification homepage
+# --------------------------------------------------
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def google_verification_homepage():
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="google-site-verification"
+              content="HSgHzJETwYx5fFIgy4mhbnZ6MvHhIKIifTpcB1qwGFs" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>AgentDeal API</title>
+        <meta name="description"
+              content="AgentDeal API - AI-powered marketplace and negotiation platform.">
+    </head>
+    <body>
+        <h1>AgentDeal API</h1>
+        <p>AgentDeal backend service is running.</p>
+        <p>API documentation: <a href="/docs">Open API Docs</a></p>
+    </body>
+    </html>
+    """
 
 
 # --------------------------------------------------
