@@ -3,7 +3,9 @@ import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("data/agentdeal.db")
+DB_PATH = Path(
+    os.getenv("AGENTDEAL_DB_PATH", "data/agentdeal.db")
+)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
