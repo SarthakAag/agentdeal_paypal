@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 pydantic>=2
 httpx
-pytestpython-dotenv
+pytest
+python-dotenv
 python-dotenv
 itsdangerous
