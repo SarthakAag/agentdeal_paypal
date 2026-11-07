@@ -1,5 +1,5 @@
 
-const BASE = "/api";
+const BASE = `${import.meta.env.VITE_API_BASE_URL || ""}/api`;
 
 function message(detail, fallback) {
   if (typeof detail === "string") return detail;
