@@ -1,25 +1,34 @@
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { api } from "../api";
 import { useAuth } from "../auth";
 import { ErrorBox, Field } from "../components/Ui";
 
-// Local demo accounts created by scripts/seed_demo.py
-const DEMO_PW = "demo-pass-123";
+const DEMO_ACCOUNTS_ENABLED =
+  import.meta.env.VITE_DEMO_ACCOUNTS_ENABLED === "true";
 
-// Backend URL:
-// Local development: uses Vite proxy.
-// Production: uses the Render backend.
 const API_BASE = (
   import.meta.env.VITE_API_BASE_URL || ""
 ).replace(/\/+$/, "");
 
+const DEMO_ACCOUNTS = {
+  buyer: {
+    email: "buyer@demo.test",
+    password: "demo-pass-123",
+  },
+  seller: {
+    email: "seller@demo.test",
+    password: "demo-pass-123",
+  },
+};
+
 const ERRORS = {
   failed:
-    "PayPal sign-in didn't complete. Try again, or use email and password below.",
+    "PayPal sign-in didn't complete. Try again, or use your AgentDeal account.",
   noemail:
     "PayPal didn't share an email address, so we couldn't create the account.",
+  email_unverified:
+    "Your PayPal email could not be verified. Please use your AgentDeal account.",
 };
 
 export default function Login() {
@@ -45,28 +54,32 @@ export default function Login() {
   );
 
   const [busy, setBusy] = useState(false);
-  const [cfg, setCfg] = useState(null);
 
   const set = (k) => (e) =>
     setF({ ...f, [k]: e.target.value });
 
-  // Load application configuration.
-  useEffect(() => {
-    api.config()
-      .then(setCfg)
-      .catch(() => {});
-  }, []);
-
-  // Redirect authenticated users.
   useEffect(() => {
     if (user) {
       nav(from, { replace: true });
     }
   }, [user, nav, from]);
 
-  // PayPal OAuth login URL.
   const paypalLoginUrl =
     `${API_BASE}/api/auth/paypal/login?role=${encodeURIComponent(role)}`;
+
+  function selectDemoAccount(selectedRole) {
+    const account = DEMO_ACCOUNTS[selectedRole];
+
+    setRole(selectedRole);
+    setMode("login");
+    setErr("");
+
+    setF({
+      name: "",
+      email: account.email,
+      password: account.password,
+    });
+  }
 
   async function submit(e) {
     e.preventDefault();
@@ -84,36 +97,97 @@ export default function Login() {
         });
       }
     } catch (e2) {
-      setErr(e2.message);
+      setErr(e2.message || "Unable to sign in.");
       setBusy(false);
     }
   }
 
   return (
     <div className="signin">
-      <h1>Sign in to AgentDeal</h1>
+      <h1>Welcome to AgentDeal</h1>
 
       <p className="muted">
-        Your PayPal account is your identity here.
-        We only read your email address.
+        Explore AI-powered negotiations and smarter commerce.
+        You don't need a PayPal account to try the demo.
+      </p>
+
+      {DEMO_ACCOUNTS_ENABLED && (
+        <section className="demo-section">
+          <h2>Try AgentDeal with a demo account</h2>
+
+          <p className="muted">
+            Choose a shared demo account. Credentials are
+            automatically filled into the login form.
+          </p>
+
+          <div className="demo-cards">
+            <div className="demo-card">
+              <h3>Demo Buyer</h3>
+
+              <p>
+                Explore products, negotiate prices and
+                manage buyer deals.
+              </p>
+
+              <p className="muted">
+                buyer@demo.test
+              </p>
+
+              <button
+                type="button"
+                className="btn primary"
+                onClick={() => selectDemoAccount("buyer")}
+              >
+                Continue as Demo Buyer
+              </button>
+            </div>
+
+            <div className="demo-card">
+              <h3>Demo Seller</h3>
+
+              <p>
+                Create listings, negotiate with buyers
+                and manage seller deals.
+              </p>
+
+              <p className="muted">
+                seller@demo.test
+              </p>
+
+              <button
+                type="button"
+                className="btn primary"
+                onClick={() => selectDemoAccount("seller")}
+              >
+                Continue as Demo Seller
+              </button>
+            </div>
+          </div>
+
+          <small className="muted">
+            Shared demo accounts are for testing only.
+            Do not store personal or confidential information.
+            PayPal payments are disabled for demo accounts.
+          </small>
+        </section>
+      )}
+
+      <hr />
+
+      <h2>Optional: Continue with PayPal</h2>
+
+      <p className="muted">
+        You will be redirected to PayPal's official website
+        to authorize access to your basic account information.
+        AgentDeal never asks for your PayPal password.
       </p>
 
       <fieldset className="roles">
-        <legend>
-          First time here? Choose how you'll use it
-        </legend>
+        <legend>Choose your account role</legend>
 
         {[
-          [
-            "buyer",
-            "Buyer",
-            "Send an agent to negotiate for you",
-          ],
-          [
-            "seller",
-            "Seller",
-            "List items with private limits",
-          ],
+          ["buyer", "Buyer", "Send an agent to negotiate for you"],
+          ["seller", "Seller", "List items with private limits"],
         ].map(([v, t, d]) => (
           <label
             key={v}
@@ -133,29 +207,20 @@ export default function Login() {
         ))}
       </fieldset>
 
-      {/* PayPal login now redirects to the backend domain */}
-      <a
-        className="btn paypal"
-        href={paypalLoginUrl}
-      >
+      <a className="btn paypal" href={paypalLoginUrl}>
         Continue with PayPal
       </a>
 
-      <small className="muted">
-        Existing accounts keep their original role.
-      </small>
-
       <ErrorBox>{err}</ErrorBox>
 
-      <details className="alt" open={!!err}>
+      <details className="alt" open={!!err || !!f.email}>
         <summary>
-          Use email and password instead
+          {DEMO_ACCOUNTS_ENABLED
+            ? "Use your AgentDeal account"
+            : "Use email and password"}
         </summary>
 
-        <form
-          className="form"
-          onSubmit={submit}
-        >
+        <form className="form" onSubmit={submit}>
           {mode === "register" && (
             <Field label="Your name">
               <input
@@ -168,7 +233,7 @@ export default function Login() {
             </Field>
           )}
 
-          <Field label="Email">
+          <Field label="AgentDeal email">
             <input
               required
               type="email"
@@ -178,14 +243,7 @@ export default function Login() {
             />
           </Field>
 
-          <Field
-            label="Password"
-            hint={
-              mode === "register"
-                ? "At least 8 characters. Uses the role chosen above."
-                : undefined
-            }
-          >
+          <Field label="AgentDeal password">
             <input
               required
               type="password"
@@ -204,10 +262,13 @@ export default function Login() {
             <button
               className="btn primary"
               disabled={busy}
+              type="submit"
             >
-              {mode === "login"
-                ? "Sign in"
-                : "Create account"}
+              {busy
+                ? "Please wait..."
+                : mode === "login"
+                  ? "Sign in"
+                  : "Create account"}
             </button>
 
             <button
@@ -216,44 +277,15 @@ export default function Login() {
               onClick={() => {
                 setErr("");
                 setMode(
-                  mode === "login"
-                    ? "register"
-                    : "login"
+                  mode === "login" ? "register" : "login"
                 );
               }}
             >
               {mode === "login"
                 ? "Create an account"
-                : "I already have one"}
+                : "I already have an account"}
             </button>
           </div>
-
-          {cfg?.demo && (
-            <div className="row">
-              <small className="muted">
-                Demo:
-              </small>
-
-              {["buyer", "seller"].map((r) => (
-                <button
-                  type="button"
-                  key={r}
-                  className="link"
-                  onClick={() => {
-                    setMode("login");
-
-                    setF({
-                      ...f,
-                      email: `${r}@demo.test`,
-                      password: DEMO_PW,
-                    });
-                  }}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          )}
         </form>
       </details>
     </div>
