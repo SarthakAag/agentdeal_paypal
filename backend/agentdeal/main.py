@@ -9,11 +9,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.middleware.sessions import SessionMiddleware
 
-# Load environment variables before application configuration.
 from backend.agentdeal import paypal_client  # noqa: F401
 
 from backend.agentdeal.assist import router as assist_router
-from backend.agentdeal.auth import router as auth_router
+from backend.agentdeal.auth import (
+    router as auth_router,
+    ensure_demo_accounts,
+)
 from backend.agentdeal.db import init_db
 from backend.agentdeal.marketplace import router as marketplace_router
 from backend.agentdeal.messages import (
@@ -61,7 +63,7 @@ app = FastAPI(
 
 frontend_url = os.getenv(
     "FRONTEND_URL",
-    "http://localhost:5173"
+    "http://localhost:5173",
 ).rstrip("/")
 
 app.add_middleware(
@@ -79,7 +81,9 @@ app.add_middleware(
 
 init_db()
 
-# Creates the buyer-seller chat table.
+# Initialize shared demo accounts independently of DEMO_MODE.
+ensure_demo_accounts()
+
 init_messages_table()
 
 
@@ -116,7 +120,7 @@ def google_verification_homepage():
     <body>
         <h1>AgentDeal API</h1>
         <p>AgentDeal backend service is running.</p>
-        <p>API documentation: <a href="/docs">Open API Docs</a></p>
+        <p><a href="/docs">Open API documentation</a></p>
     </body>
     </html>
     """
@@ -131,11 +135,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(marketplace_router, prefix="/api")
 app.include_router(payments_router, prefix="/api")
 app.include_router(assist_router, prefix="/api")
-
-# Buyer-seller conversation endpoints.
 app.include_router(messages_router, prefix="/api")
-
-# Notification endpoints.
 app.include_router(notifications_router, prefix="/api")
 
 
@@ -156,21 +156,16 @@ class NegotiationRequest(BaseModel):
 
 @app.post("/api/negotiate")
 def start_negotiation(request: NegotiationRequest):
-    """
-    Original fixed-formula negotiation endpoint.
-    Kept as a simple baseline alongside the marketplace.
-    """
-
     if request.seller_minimum > request.seller_offer:
         raise HTTPException(
             422,
-            "Seller opening offer cannot be below seller minimum."
+            "Seller opening offer cannot be below seller minimum.",
         )
 
     if request.buyer_offer > request.buyer_budget:
         raise HTTPException(
             422,
-            "Buyer opening offer cannot exceed buyer budget."
+            "Buyer opening offer cannot exceed buyer budget.",
         )
 
     result = negotiate(Deal(**request.model_dump()))
@@ -191,7 +186,6 @@ def start_negotiation(request: NegotiationRequest):
 DIST = Path("frontend/dist")
 
 if DIST.exists():
-
     app.mount(
         "/assets",
         StaticFiles(directory=DIST / "assets"),
@@ -200,8 +194,6 @@ if DIST.exists():
 
     @app.get("/{path:path}", include_in_schema=False)
     def spa(path: str):
-
-        # Do not let unknown API routes return index.html.
         if path.startswith("api/"):
             raise HTTPException(404, "Not found")
 
