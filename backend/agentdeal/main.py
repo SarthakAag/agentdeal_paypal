@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -36,7 +37,7 @@ if not _secret:
         _secret = "dev-only-change-me"
     else:
         raise RuntimeError(
-            "Set SESSION_SECRET in .env (any long random string)"
+            "Set SESSION_SECRET in environment variables"
         )
 
 
@@ -55,6 +56,24 @@ app = FastAPI(
 
 
 # --------------------------------------------------
+# CORS configuration
+# --------------------------------------------------
+
+frontend_url = os.getenv(
+    "FRONTEND_URL",
+    "http://localhost:5173"
+).rstrip("/")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# --------------------------------------------------
 # Database initialization
 # --------------------------------------------------
 
@@ -65,13 +84,13 @@ init_messages_table()
 
 
 # --------------------------------------------------
-# Middleware
+# Session middleware
 # --------------------------------------------------
 
 app.add_middleware(
     SessionMiddleware,
     secret_key=_secret,
-    same_site="lax",
+    same_site="none" if frontend_url.startswith("https://") else "lax",
     https_only=os.getenv("HTTPS_ONLY") == "1",
 )
 
@@ -89,9 +108,7 @@ app.include_router(assist_router, prefix="/api")
 # Buyer-seller conversation endpoints.
 app.include_router(messages_router, prefix="/api")
 
-# Notification endpoints:
-# GET  /api/notifications
-# POST /api/notifications/read
+# Notification endpoints.
 app.include_router(notifications_router, prefix="/api")
 
 
@@ -141,7 +158,7 @@ def start_negotiation(request: NegotiationRequest):
 
 
 # --------------------------------------------------
-# React production build
+# React production build (optional)
 # --------------------------------------------------
 
 DIST = Path("frontend/dist")
@@ -156,6 +173,7 @@ if DIST.exists():
 
     @app.get("/{path:path}", include_in_schema=False)
     def spa(path: str):
+
         # Do not let unknown API routes return index.html.
         if path.startswith("api/"):
             raise HTTPException(404, "Not found")
