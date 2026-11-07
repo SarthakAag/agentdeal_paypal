@@ -1,5 +1,7 @@
 
-const BASE = `${import.meta.env.VITE_API_BASE_URL || ""}/api`;
+const BASE = `${
+  import.meta.env.VITE_API_BASE_URL || ""
+}/api`;
 
 function message(detail, fallback) {
   if (typeof detail === "string") return detail;
@@ -19,7 +21,7 @@ async function req(path, { method = "GET", body } = {}) {
     headers: {
       "Content-Type": "application/json",
     },
-    credentials: "same-origin",
+    credentials: "include",
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
@@ -42,16 +44,10 @@ async function req(path, { method = "GET", body } = {}) {
 }
 
 export const api = {
-  // --------------------------------------------------
   // Configuration
-  // --------------------------------------------------
-
   config: () => req("/config"),
 
-  // --------------------------------------------------
   // Authentication
-  // --------------------------------------------------
-
   me: () => req("/auth/me"),
 
   login: (body) =>
@@ -71,16 +67,12 @@ export const api = {
       method: "POST",
     }),
 
-  // --------------------------------------------------
   // Marketplace listings
-  // --------------------------------------------------
-
   listings: () => req("/listings"),
 
   myListings: () => req("/listings/mine"),
 
-  listing: (id) =>
-    req(`/listings/${id}`),
+  listing: (id) => req(`/listings/${id}`),
 
   createListing: (body) =>
     req("/listings", {
@@ -93,10 +85,7 @@ export const api = {
       method: "POST",
     }),
 
-  // --------------------------------------------------
   // Negotiations
-  // --------------------------------------------------
-
   startNegotiation: (body) =>
     req("/negotiations", {
       method: "POST",
@@ -112,19 +101,13 @@ export const api = {
   negotiations: (listingId) =>
     req(`/negotiations?listing_id=${encodeURIComponent(listingId)}`),
 
-  myDeals: () =>
-    req("/negotiations"),
+  myDeals: () => req("/negotiations"),
 
-  summary: () =>
-    req("/account/summary"),
+  summary: () => req("/account/summary"),
 
-  deal: (id) =>
-    req(`/negotiations/${id}`),
+  deal: (id) => req(`/negotiations/${id}`),
 
-  // --------------------------------------------------
   // Human approval and review
-  // --------------------------------------------------
-
   decide: (id, approve = true) =>
     req(`/negotiations/${id}/decision`, {
       method: "POST",
@@ -137,11 +120,7 @@ export const api = {
       body: { accept },
     }),
 
-  // --------------------------------------------------
-  // Buyer–seller messaging
-  // Requires backend/agentdeal/messages.py
-  // --------------------------------------------------
-
+  // Buyer-seller messaging
   messages: (id) =>
     req(`/negotiations/${id}/messages`),
 
@@ -151,10 +130,7 @@ export const api = {
       body: { body },
     }),
 
-  // --------------------------------------------------
   // PayPal payments
-  // --------------------------------------------------
-
   pay: (id) =>
     req(`/negotiations/${id}/pay`, {
       method: "POST",
@@ -181,12 +157,8 @@ export const api = {
       },
     }),
 
-  // --------------------------------------------------
   // Activity and deadlines
-  // --------------------------------------------------
-
-  activity: () =>
-    req("/activity"),
+  activity: () => req("/activity"),
 
   sweep: () =>
     req("/deadlines/sweep", {
@@ -198,13 +170,8 @@ export const api = {
       method: "POST",
     }),
 
-  // --------------------------------------------------
   // Notifications
-  // These require notification routes in the backend.
-  // --------------------------------------------------
-
-  notifications: () =>
-    req("/notifications"),
+  notifications: () => req("/notifications"),
 
   markRead: (ids) =>
     req("/notifications/read", {
@@ -212,12 +179,8 @@ export const api = {
       body: ids ? { ids } : {},
     }),
 
-  // --------------------------------------------------
   // AI assistance
-  // --------------------------------------------------
-
-  assistStatus: () =>
-    req("/assist/status"),
+  assistStatus: () => req("/assist/status"),
 
   assistMandate: (text, ask_price) =>
     req("/assist/mandate", {
@@ -233,10 +196,6 @@ export const api = {
       method: "POST",
     }),
 
-  // --------------------------------------------------
   // Training and evaluation results
-  // --------------------------------------------------
-
-  results: () =>
-    req("/results"),
+  results: () => req("/results"),
 };
