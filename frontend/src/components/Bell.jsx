@@ -26,6 +26,7 @@ export default function Bell() {
     return () => clearInterval(t);
   }, [load]);
 
+  // Close dropdown when clicking or touching outside.
   useEffect(() => {
     const away = (e) => {
       if (box.current && !box.current.contains(e.target)) {
@@ -33,8 +34,24 @@ export default function Bell() {
       }
     };
 
-    document.addEventListener("mousedown", away);
-    return () => document.removeEventListener("mousedown", away);
+    document.addEventListener("pointerdown", away);
+
+    return () => {
+      document.removeEventListener("pointerdown", away);
+    };
+  }, []);
+
+  // Close dropdown with Escape.
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   async function go(n) {
@@ -55,19 +72,23 @@ export default function Bell() {
       await api.markRead();
       await load();
     } catch {
-      // The existing notification state remains visible if the request fails.
+      // Keep the existing notification state if the request fails.
     }
   }
 
   return (
     <div className="bell" ref={box}>
       <button
+        type="button"
         className="bell-btn"
         aria-label={`Notifications, ${data.unread} unread`}
         aria-expanded={open}
+        aria-haspopup="true"
         onClick={() => {
-          setOpen(!open);
-          if (!open) load();
+          setOpen((previous) => {
+            if (!previous) load();
+            return !previous;
+          });
         }}
       >
         <svg
@@ -93,33 +114,39 @@ export default function Bell() {
       </button>
 
       {open && (
-        <div className="bell-panel" role="region" aria-label="Notifications">
+        <div
+          className="bell-panel"
+          role="region"
+          aria-label="Notifications"
+        >
           <div className="bell-head">
             <b>Notifications</b>
 
             {data.unread > 0 && (
-              <button className="link" onClick={readAll}>
+              <button
+                type="button"
+                className="link"
+                onClick={readAll}
+              >
                 Mark all read
               </button>
             )}
           </div>
 
           {data.items.length === 0 && (
-            <p
-              className="muted"
-              style={{ padding: ".7rem .75rem", margin: 0 }}
-            >
+            <p className="muted bell-empty">
               Nothing yet.
             </p>
           )}
 
           {data.items.map((n) => (
             <button
+              type="button"
               key={n.id}
               className={`bell-item ${n.is_read ? "" : "unread"}`}
               onClick={() => go(n)}
             >
-              {n.text}
+              <span className="bell-item-text">{n.text}</span>
               <small>{fmtTime(n.created)}</small>
             </button>
           ))}
