@@ -1,15 +1,19 @@
-
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useAuth } from "../auth";
 import { ErrorBox, Field } from "../components/Ui";
 
 const DEMO_ACCOUNTS_ENABLED =
   import.meta.env.VITE_DEMO_ACCOUNTS_ENABLED === "true";
 
-const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL || ""
-).replace(/\/+$/, "");
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(
+  /\/+$/,
+  ""
+);
 
 const DEMO_ACCOUNTS = {
   buyer: {
@@ -33,7 +37,6 @@ const ERRORS = {
 
 export default function Login() {
   const { user, login, register } = useAuth();
-
   const nav = useNavigate();
   const loc = useLocation();
   const [params] = useSearchParams();
@@ -42,30 +45,28 @@ export default function Login() {
 
   const [role, setRole] = useState("buyer");
   const [mode, setMode] = useState("login");
-
   const [f, setF] = useState({
     name: "",
     email: "",
     password: "",
   });
-
-  const [err, setErr] = useState(
-    ERRORS[params.get("error")] || ""
-  );
-
+  const [err, setErr] = useState(ERRORS[params.get("error")] || "");
   const [busy, setBusy] = useState(false);
 
-  const set = (k) => (e) =>
-    setF({ ...f, [k]: e.target.value });
-
   useEffect(() => {
-    if (user) {
-      nav(from, { replace: true });
-    }
+    if (user) nav(from, { replace: true });
   }, [user, nav, from]);
 
   const paypalLoginUrl =
     `${API_BASE}/api/auth/paypal/login?role=${encodeURIComponent(role)}`;
+
+  function set(k) {
+    return (e) =>
+      setF((current) => ({
+        ...current,
+        [k]: e.target.value,
+      }));
+  }
 
   function selectDemoAccount(selectedRole) {
     const account = DEMO_ACCOUNTS[selectedRole];
@@ -83,7 +84,6 @@ export default function Login() {
 
   async function submit(e) {
     e.preventDefault();
-
     setErr("");
     setBusy(true);
 
@@ -91,10 +91,7 @@ export default function Login() {
       if (mode === "login") {
         await login(f.email, f.password);
       } else {
-        await register({
-          ...f,
-          role,
-        });
+        await register({ ...f, role });
       }
     } catch (e2) {
       setErr(e2.message || "Unable to sign in.");
@@ -116,22 +113,17 @@ export default function Login() {
           <h2>Try AgentDeal with a demo account</h2>
 
           <p className="muted">
-            Choose a shared demo account. Credentials are
-            automatically filled into the login form.
+            Choose a shared demo account. Credentials are automatically
+            filled into the login form.
           </p>
 
           <div className="demo-cards">
-            <div className="demo-card">
+            <div className="card demo-card">
               <h3>Demo Buyer</h3>
-
               <p>
-                Explore products, negotiate prices and
-                manage buyer deals.
+                Explore products, negotiate prices and manage buyer deals.
               </p>
-
-              <p className="muted">
-                buyer@demo.test
-              </p>
+              <p className="muted">buyer@demo.test</p>
 
               <button
                 type="button"
@@ -142,17 +134,13 @@ export default function Login() {
               </button>
             </div>
 
-            <div className="demo-card">
+            <div className="card demo-card">
               <h3>Demo Seller</h3>
-
               <p>
-                Create listings, negotiate with buyers
-                and manage seller deals.
+                Create listings, negotiate with buyers and manage seller
+                deals.
               </p>
-
-              <p className="muted">
-                seller@demo.test
-              </p>
+              <p className="muted">seller@demo.test</p>
 
               <button
                 type="button"
@@ -165,9 +153,9 @@ export default function Login() {
           </div>
 
           <small className="muted">
-            Shared demo accounts are for testing only.
-            Do not store personal or confidential information.
-            PayPal payments are disabled for demo accounts.
+            Shared demo accounts are for testing only. Do not store personal
+            or confidential information. PayPal payments are disabled for
+            demo accounts.
           </small>
         </section>
       )}
@@ -177,9 +165,9 @@ export default function Login() {
       <h2>Optional: Continue with PayPal</h2>
 
       <p className="muted">
-        You will be redirected to PayPal's official website
-        to authorize access to your basic account information.
-        AgentDeal never asks for your PayPal password.
+        You will be redirected to PayPal's official website to authorize
+        access to your basic account information. AgentDeal never asks for
+        your PayPal password.
       </p>
 
       <fieldset className="roles">
@@ -188,21 +176,21 @@ export default function Login() {
         {[
           ["buyer", "Buyer", "Send an agent to negotiate for you"],
           ["seller", "Seller", "List items with private limits"],
-        ].map(([v, t, d]) => (
+        ].map(([value, title, description]) => (
           <label
-            key={v}
-            className={role === v ? "on" : ""}
+            key={value}
+            className={role === value ? "on" : ""}
           >
             <input
               type="radio"
               name="role"
-              value={v}
-              checked={role === v}
-              onChange={() => setRole(v)}
+              value={value}
+              checked={role === value}
+              onChange={() => setRole(value)}
             />
 
-            <b>{t}</b>
-            <span>{d}</span>
+            <b>{title}</b>
+            <span>{description}</span>
           </label>
         ))}
       </fieldset>
@@ -258,7 +246,7 @@ export default function Login() {
             />
           </Field>
 
-          <div className="row">
+          <div className="row auth-actions">
             <button
               className="btn primary"
               disabled={busy}
@@ -276,8 +264,8 @@ export default function Login() {
               className="link"
               onClick={() => {
                 setErr("");
-                setMode(
-                  mode === "login" ? "register" : "login"
+                setMode((current) =>
+                  current === "login" ? "register" : "login"
                 );
               }}
             >
