@@ -29,18 +29,29 @@ from backend.agentdeal.views import router as views_router
 
 
 # --------------------------------------------------
-# Session configuration
+# Environment configuration
 # --------------------------------------------------
 
-_secret = os.getenv("SESSION_SECRET")
+frontend_url = os.getenv(
+    "FRONTEND_URL",
+    "http://localhost:5173",
+).rstrip("/")
 
-if not _secret:
+secret = os.getenv("SESSION_SECRET")
+
+if not secret:
     if os.getenv("DEMO_MODE") == "1":
-        _secret = "dev-only-change-me"
+        secret = "dev-only-change-me"
     else:
         raise RuntimeError(
             "Set SESSION_SECRET in environment variables"
         )
+
+# HTTPS cookies are required for cross-origin production sessions.
+https_only = (
+    os.getenv("HTTPS_ONLY", "1" if frontend_url.startswith("https://") else "0")
+    == "1"
+)
 
 
 # --------------------------------------------------
@@ -50,28 +61,10 @@ if not _secret:
 app = FastAPI(
     title="AgentDeal API",
     description=(
-        "AI agents negotiate deals; PayPal holds, "
-        "captures, voids and refunds the money"
+        "AI agents negotiate deals; PayPal holds, captures, "
+        "voids and refunds the money"
     ),
     version="0.9.0",
-)
-
-
-# --------------------------------------------------
-# CORS configuration
-# --------------------------------------------------
-
-frontend_url = os.getenv(
-    "FRONTEND_URL",
-    "http://localhost:5173",
-).rstrip("/")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[frontend_url],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
 )
 
 
@@ -80,10 +73,7 @@ app.add_middleware(
 # --------------------------------------------------
 
 init_db()
-
-# Initialize shared demo accounts independently of DEMO_MODE.
 ensure_demo_accounts()
-
 init_messages_table()
 
 
@@ -91,11 +81,29 @@ init_messages_table()
 # Session middleware
 # --------------------------------------------------
 
+# Register session middleware first.
 app.add_middleware(
     SessionMiddleware,
-    secret_key=_secret,
+    secret_key=secret,
     same_site="none" if frontend_url.startswith("https://") else "lax",
-    https_only=os.getenv("HTTPS_ONLY") == "1",
+    https_only=https_only,
+    session_cookie="agentdeal_session",
+    max_age=60 * 60 * 24 * 7,
+)
+
+
+# --------------------------------------------------
+# CORS middleware
+# --------------------------------------------------
+
+# Register CORS after SessionMiddleware so CORS is the
+# outer middleware and can handle preflight/error responses.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[frontend_url],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 
