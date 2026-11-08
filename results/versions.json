@@ -1,0 +1,33 @@
+{
+  "note": "100 unseen scenarios per role, played against mixed rule-based opponents. Score counts a failed deal as 0. Buyer and seller scores are not comparable with each other.",
+  "roles": {
+    "buyer": {
+      "baseline": {"name": "Rule-based baseline", "closure": 1.0, "score": 0.523, "mistakes": 0.0},
+      "versions": [
+        {"name": "v0", "desc": "Imitates the rule-based teacher. Often tries to accept offers outside its limits.", "closure": 1.0, "score": 0.520, "mistakes": 0.70},
+        {"name": "v1", "desc": "Prompt states 'within your limits: YES/NO'. Mistakes drop, but it refuses too many deals.", "closure": 0.704, "score": 0.322, "mistakes": 0.14},
+        {"name": "Hybrid", "desc": "Rules decide accepts, the model proposes counteroffers.", "closure": 0.914, "score": 0.549, "mistakes": 0.13},
+        {"name": "Final", "desc": "Hybrid plus a concession floor in the last two rounds.", "closure": 1.0, "score": 0.535, "mistakes": 0.25}
+      ]
+    },
+    "seller": {
+      "baseline": {"name": "Rule-based baseline", "closure": 1.0, "score": 0.593, "mistakes": 0.0},
+      "versions": [
+        {"name": "v0", "desc": "Imitates the rule-based teacher.", "closure": 1.0, "score": 0.605, "mistakes": 0.45},
+        {"name": "v1", "desc": "Explicit limit check in the prompt.", "closure": 1.0, "score": 0.538, "mistakes": 0.07},
+        {"name": "Hybrid", "desc": "Rules decide accepts, the model proposes counteroffers.", "closure": 1.0, "score": 0.591, "mistakes": 0.10},
+        {"name": "Final", "desc": "Hybrid plus a concession floor in the last two rounds.", "closure": 1.0, "score": 0.580, "mistakes": 0.21}
+      ]
+    }
+  },
+  "model_vs_model": {"before": 0.71, "after": 1.0, "detail": "Closure on feasible deals when both sides are fine-tuned agents (84 feasible scenarios): 71% before the concession floor, 100% after."},
+  "assist": [
+    {"name": "Mandate parser", "result": "49/51 on my regression set, 9/11 on a fresh set. Misses: hours read as days, 'no preference' read as speed, a dropped ideal delivery."},
+    {"name": "Message narrator", "result": "100% of 100 validation messages kept the exact price and days (checked by code)."}
+  ],
+  "caveats": [
+    "Differences under about 0.03 are noise at 100 scenarios.",
+    "The mandate parser tests were written by the same person who wrote the training templates, so its scores are optimistic.",
+    "'Mistakes' counts how often the rule engine or fallback had to replace a model move. No deal ever broke a limit."
+  ]
+}
