@@ -32,15 +32,30 @@ def health():
 
 @router.get("/results")
 def results():
-    p = Path("results/versions.json")
-    if not p.exists():
-        raise HTTPException(404, "results/versions.json not found")
-    return json.loads(p.read_text(encoding="utf-8"))
+    # Resolve the project root from this file instead of relying on
+    # Render's current working directory.
+    project_root = Path(__file__).resolve().parents[2]
+    p = project_root / "results" / "versions.json"
+
+    if not p.is_file():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Results file not found: {p}",
+        )
+
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=500,
+            detail="Invalid results JSON file",
+        )
 
 
 def _reliability() -> dict:
     """On-time delivery per listing, from real (non-simulated) deals. The latest outcome of each deal counts."""
     out: dict = {}
+
     with conn() as c:
         rows = c.execute(
             f"""SELECT n.listing_id AS lid, o.outcome AS outcome, COUNT(*) AS c
@@ -54,6 +69,7 @@ def _reliability() -> dict:
     for r in rows:
         d = out.setdefault(r["lid"], {"deals": 0, "on_time": 0})
         d["deals"] += r["c"]
+
         if r["outcome"] == "delivered_on_time":
             d["on_time"] += r["c"]
 
