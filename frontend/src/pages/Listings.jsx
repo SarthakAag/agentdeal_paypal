@@ -1,82 +1,86 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { api } from "../api";
-import { useAuth } from "../auth";
-import { inr } from "../format";
-import { ErrorBox } from "../components/Ui";
-
-function Reliability({ r }) {
-  if (!r || !r.deals) return <small className="muted">No delivery history yet</small>;
-  return (
-    <small className="muted">
-      On-time delivery: {r.on_time}/{r.deals} ({Math.round(r.rate * 100)}%)
-    </small>
-  );
-}
 
 export default function Listings() {
-  const { user } = useAuth();
-  const nav = useNavigate();
-  const [items, setItems] = useState(null);
-  const [err, setErr] = useState("");
-  const [picked, setPicked] = useState([]);
-  const isBuyer = user?.role === "buyer";
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    api.listings().then(setItems).catch((e) => setErr(e.message));
+    api.listings()
+      .then(setItems)
+      .catch(() => setError("Unable to load marketplace listings."))
+      .finally(() => setLoading(false));
   }, []);
 
-  function toggle(id) {
-    setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : p.length < 5 ? [...p, id] : p));
+  if (loading) {
+    return <div className="loading">Loading marketplace...</div>;
   }
 
   return (
-    <>
-      <div className="row between">
+    <section className="marketplace">
+      <div className="marketplace-heading">
         <div>
+          <p className="eyebrow">AI-POWERED COMMERCE</p>
           <h1>Marketplace</h1>
-          <p className="muted">
-            {!user && <>Browse the items. <Link to="/login">Sign in</Link> as a buyer to send an agent, or as a seller to list one.</>}
-            {isBuyer && "Open an item to negotiate, or tick 2 to 5 items and compare them with one mandate."}
-            {user?.role === "seller" && "List an item with your private limits. Buyers' agents negotiate with yours."}
+          <p>
+            Browse products and let AI agents negotiate a fair deal for you.
           </p>
         </div>
-        {user?.role === "seller" && <Link className="btn primary" to="/sell">Sell an item</Link>}
+
+        <Link className="btn primary" to="/sell">
+          List a product
+        </Link>
       </div>
-      <ErrorBox>{err}</ErrorBox>
-      {!items && !err && <p>Loading…</p>}
-      {items && items.length === 0 && <div className="card empty">No items yet.</div>}
-      <div className="grid">
-        {(items || []).map((l) => (
-          <div key={l.id} className={`card pick ${picked.includes(l.id) ? "on" : ""}`}>
-            {isBuyer && (
-              <label className="tick">
-                <input type="checkbox" checked={picked.includes(l.id)} onChange={() => toggle(l.id)} />
-                <span>Compare</span>
-              </label>
-            )}
-            <Link to={`/listings/${l.id}`} className="item">
-              <div className="row between">
-                <h3>{l.product}</h3>
-                {l.mine && <span className="chip">Yours</span>}
+
+      {error && <p className="error">{error}</p>}
+
+      {!items.length && !error ? (
+        <div className="empty">
+          <h2>No listings yet</h2>
+          <p>Be the first seller to list a product.</p>
+        </div>
+      ) : (
+        <div className="grid">
+          {items.map((item) => (
+            <article className="card listing-card" key={item.id}>
+              {item.image_url ? (
+                <img
+                  className="listing-image"
+                  src={item.image_url}
+                  alt={item.title || item.name || "Product"}
+                />
+              ) : (
+                <div className="listing-image listing-image-placeholder">
+                  No image
+                </div>
+              )}
+
+              <div className="listing-content">
+                <h2 className="listing-title">
+                  {item.title || item.name}
+                </h2>
+
+                {item.description && (
+                  <p className="muted">{item.description}</p>
+                )}
+
+                <div className="listing-price">
+                  ${Number(item.price || 0).toFixed(2)}
+                </div>
+
+                <Link
+                  className="btn primary block"
+                  to={`/deal/${item.id}`}
+                >
+                  Negotiate deal
+                </Link>
               </div>
-              <div className="price">{inr(l.ask_price)}</div>
-              <small className="muted">
-                asking price · by {l.seller_name || "a seller"} · {l.negotiations} negotiation{l.negotiations === 1 ? "" : "s"}
-              </small>
-              <div><Reliability r={l.reliability} /></div>
-            </Link>
-          </div>
-        ))}
-      </div>
-      {isBuyer && picked.length > 0 && (
-        <div className="bidbar">
-          <span>{picked.length} selected{picked.length === 5 ? " (maximum)" : ""}</span>
-          <button className="btn primary" disabled={picked.length < 2} onClick={() => nav(`/bid?ids=${picked.join(",")}`)}>
-            {picked.length < 2 ? "Pick at least 2" : "Compare and negotiate"}
-          </button>
+            </article>
+          ))}
         </div>
       )}
-    </>
+    </section>
   );
 }
